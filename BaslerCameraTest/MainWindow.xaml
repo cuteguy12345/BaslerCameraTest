@@ -1,0 +1,30 @@
+﻿<Window x:Class="BaslerCameraTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BaslerCameraTest"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ComboBox ItemsSource="{Binding AvailableCameras}"
+          SelectedItem="{Binding SelectedCamera}"
+          DisplayMemberPath="[FriendlyName]"
+          Margin="10" Grid.Row="0"/>
+
+            <Button Content="한장" Command="{Binding OneShotCommand}" Margin="5,0" Grid.Row="1"/>
+            <Button Content="여러장" Grid.Row="2"/>
+
+
+            <Image Source="{Binding CapturedImage}" Stretch="Fill" Margin="10" Grid.Row="3"/>
+
+
+    </Grid>
+</Window>
