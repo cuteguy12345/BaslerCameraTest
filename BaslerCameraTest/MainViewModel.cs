@@ -19,12 +19,12 @@ namespace BaslerCameraTest
     public class MainViewModel : ViewModelBase
     {
         private Basler.Pylon.Camera? camera = null;
-        private Stopwatch stopwatch = new();
 
         public MainViewModel()
         {
-
+            ShotCommand = new RelayCommand(ContinuousShot);
             OneShotCommand = new RelayCommand(OneShot);
+            StopCommand = new RelayCommand(Stop);
             RefreshDeviceList();
         }
         public ObservableCollection<ICameraInfo> AvailableCameras { get; } = new();
@@ -39,6 +39,8 @@ namespace BaslerCameraTest
         }
 
         public ICommand OneShotCommand { get ; set; }
+        public ICommand ShotCommand { get; set; }
+        public ICommand StopCommand { get; set; }
 
         private int _width;
         public int Width
@@ -63,19 +65,19 @@ namespace BaslerCameraTest
         }
 
 
-        private double _gain;
-        public double Gain
+        private double _gainRaw;
+        public double GainRaw
         {
-            get => _gain;
+            get => _gainRaw;
             set 
-            { 
-                _gain = value;
+            {
+                _gainRaw = value;
                 OnPropertyChanged(); 
             }
         }
 
-        private double _exposureTime;
-        public double ExposureTime
+        private long _exposureTime;
+        public long ExposureTime
         {
             get => _exposureTime;
             set 
@@ -85,16 +87,6 @@ namespace BaslerCameraTest
             }
         }
 
-        private double _gamma;
-        public double Gamma
-        {
-            get => _gamma;
-            set 
-            {   
-                _gamma = value;
-                OnPropertyChanged(); 
-            }
-        }
         private BitmapImage _capturedImage;
         public BitmapImage CapturedImage
         {
@@ -108,17 +100,27 @@ namespace BaslerCameraTest
 
         private void OnImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
-                      
-            Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                var image = CameraHelper.Instance.GrabImage(camera, GetCurrentCameraSettings(), e.GrabResult);
+                if (camera == null || e.GrabResult == null || !e.GrabResult.GrabSucceeded)
+                    return;
 
-                CapturedImage = image;
-                OnPropertyChanged(nameof(CapturedImage));
-
-            });
-
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var image = CameraHelper.Instance.GrabImage(camera, GetCurrentCameraSettings(), e.GrabResult);
+                    if (image != null)
+                    {
+                        CapturedImage = image;
+                        OnPropertyChanged(nameof(CapturedImage));
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
+
 
         private void InitializeCamera(ICameraInfo cameraInfo)
         {
@@ -139,21 +141,15 @@ namespace BaslerCameraTest
                 if (camera.Parameters.Contains(PLCamera.Height))
                     Height = (int)camera.Parameters[PLCamera.Height].GetValue();
 
-                if (camera.Parameters.Contains(PLCamera.ExposureTime))
-                    ExposureTime = camera.Parameters[PLCamera.ExposureTime].GetValue();
-
                 if (camera.Parameters.Contains(PLCamera.Gain))
                 {
-                    Gain = camera.Parameters[PLCamera.Gain].GetValue();
+                    GainRaw = camera.Parameters[PLCamera.Gain].GetValue();
                 }
-
-                if (camera.Parameters.Contains(PLCamera.Gamma))
-                    Gamma = camera.Parameters[PLCamera.Gamma].GetValue();
 
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"카메라 초기화 실패: {ex.Message}");
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -177,14 +173,82 @@ namespace BaslerCameraTest
             CameraHelper.Instance.OneShot(camera, GetCurrentCameraSettings());
 
         }
+        private void ContinuousShot()
+        {
+            CameraHelper.Instance.ContinuousShot(camera);
 
+        }
+
+        private void Stop()
+        {
+            CameraHelper.Instance.Stop(camera);
+        }
         public CameraSettings GetCurrentCameraSettings() => new CameraSettings()
         {
             Width = this.Width,
             Height = this.Height,
-            Gain = this.Gain,
             ExposureTime = this.ExposureTime,
-            Gamma = this.Gamma
         };
+        private void SaveUserSet()
+        {
+            try
+            {
+                if (camera.Parameters.Contains(PLCamera.UserSetSelector))
+                    camera.Parameters[PLCamera.UserSetSelector].SetValue("UserSet1");
+
+                if (camera.Parameters.Contains(PLCamera.UserSetDefaultSelector))
+                    camera.Parameters[PLCamera.UserSetDefaultSelector].SetValue("UserSet1");
+
+                if (camera.Parameters.Contains(PLCamera.UserSetSave))
+                    camera.Parameters[PLCamera.UserSetSave].Execute();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("설정 저장 실패: " + ex.Message);
+            }
+        }
+
+        private void ApplyAndSaveSettings()
+        {
+            try
+            {
+                if (camera == null || !camera.IsOpen)
+                {
+                    MessageBox.Show("카메라가 열려 있지 않습니다.");
+                    return;
+                }
+
+
+                if (camera.Parameters.Contains(PLCamera.GainRaw))
+                    camera.Parameters[PLCamera.GainRaw].SetValue((long)GainRaw);
+
+                if (camera.Parameters.Contains(PLCamera.ExposureAuto))
+                    camera.Parameters[PLCamera.ExposureAuto].SetValue("Off");
+
+                if (camera.Parameters.Contains(PLCamera.ExposureTimeAbs))
+                    camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(ExposureTime);
+
+                if (camera.Parameters.Contains(PLCamera.Width))
+                    camera.Parameters[PLCamera.Width].SetValue(Width);
+
+                if (camera.Parameters.Contains(PLCamera.Height))
+                    camera.Parameters[PLCamera.Height].SetValue(Height);
+
+                if (camera.Parameters.Contains(PLCamera.UserSetSelector))
+                    camera.Parameters[PLCamera.UserSetSelector].SetValue("UserSet1");
+
+                if (camera.Parameters.Contains(PLCamera.UserSetDefaultSelector))
+                    camera.Parameters[PLCamera.UserSetDefaultSelector].SetValue("UserSet1");
+
+                if (camera.Parameters.Contains(PLCamera.UserSetSave))
+                    camera.Parameters[PLCamera.UserSetSave].Execute();
+
+                MessageBox.Show(" 설정 저장 완료");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("설정 저장 실패: " + ex.Message);
+            }
+        }
     }
 }

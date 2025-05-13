@@ -19,7 +19,8 @@ namespace BaslerCameraTest
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            //DataContext = new MainViewModel();
+            DataContext = new MainViewModelToolKitUse();
         }
     }
 }

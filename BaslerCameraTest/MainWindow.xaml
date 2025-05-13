@@ -5,26 +5,58 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BaslerCameraTest"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1200">
+        Title="MainWindow" Height="800" Width="1200">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Content="Width" Grid.Row="0" />
+                <Label Content="Height" Grid.Row="1"/>
+                <Label Content="Gain" Grid.Row="2"/>
+                <Label Content="ExposureTime" Grid.Row="3"/>
 
-        <ComboBox ItemsSource="{Binding AvailableCameras}"
-          SelectedItem="{Binding SelectedCamera}"
-          DisplayMemberPath="[FriendlyName]"
-          Margin="10" Grid.Row="0"/>
+                <TextBox Text="{Binding Width}" Grid.Row="0" Grid.Column="1"/>
+                <TextBox Text="{Binding Height}" Grid.Row="1" Grid.Column="1"/>
+                <TextBox Text="{Binding Gainraw}" Grid.Row="2" Grid.Column="1"/>
+                <TextBox Text="{Binding ExposureTime}" Grid.Row="3" Grid.Column="1"/>
+            </Grid>
+            <ComboBox ItemsSource="{Binding AvailableCameras}" SelectedItem="{Binding SelectedCamera}" DisplayMemberPath="[FriendlyName]" Margin="10" Grid.Row="0"/>
+            <Button Content="한장" Command="{Binding OneShotCommand}" Grid.Row="1"/>
+            <Button Content="여러장" Command="{Binding ContinuousShotCommand}" Grid.Row="2"/>
+            <Button Content="중지" Command="{Binding StopCommand}" Grid.Row="3"/>
 
-            <Button Content="한장" Command="{Binding OneShotCommand}" Margin="5,0" Grid.Row="1"/>
-            <Button Content="여러장" Grid.Row="2"/>
+            <Grid Grid.Row="8">
+                <Button Content="저장"  Command="{Binding ApplyAndSaveSettingsCommand}"/>
+            </Grid>
+        </Grid>
 
-
-            <Image Source="{Binding CapturedImage}" Stretch="Fill" Margin="10" Grid.Row="3"/>
-
+        <Grid Grid.Column="1">
+            <Image Source="{Binding CapturedImage}" Margin="10" Grid.Row="3"/>
+        </Grid>
 
     </Grid>
 </Window>
