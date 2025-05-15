@@ -175,7 +175,7 @@ namespace BaslerCameraTest
         }
         private void ContinuousShot()
         {
-            CameraHelper.Instance.ContinuousShot(camera);
+            CameraHelper.Instance.ContinuousShot(camera, GetCurrentCameraSettings());
 
         }
 

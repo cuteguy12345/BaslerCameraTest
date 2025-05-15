@@ -23,7 +23,7 @@ namespace BaslerCameraTest
             {
                 if (!grabResult.IsValid || !grabResult.GrabSucceeded)
                     return null;
-                SetChangebleCameraSettings(camera, settings);
+                //SetChangebleCameraSettings(camera, settings);
 
                 using (Bitmap bitmap = GrabResultConverterHelper.Instance.GrabResultToBitmap(grabResult))
                 {
@@ -38,10 +38,9 @@ namespace BaslerCameraTest
         }
         public void OneShot(Camera? camera, CameraSettings cameraSettings)
         {
-
             try
             {
-                SetChangebleCameraSettings(camera, cameraSettings);
+                //SetChangebleCameraSettings(camera, cameraSettings);
 
                 Configuration.AcquireSingleFrame(camera, null);
                 camera?.StreamGrabber.Start(1, GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
@@ -53,11 +52,12 @@ namespace BaslerCameraTest
         }
 
 
-        public void ContinuousShot(Camera? camera)
+        public void ContinuousShot(Camera? camera, CameraSettings cameraSettings)
         {
 
             try
             {
+                //SetChangebleCameraSettings(camera, cameraSettings);
                 Configuration.AcquireContinuous(camera, null);
                 camera?.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
             }
@@ -77,14 +77,12 @@ namespace BaslerCameraTest
                 MessageBox.Show(ex.Message);
             }
         }
-        public static void SetChangebleCameraSettings(Camera camera, CameraSettings cameraSettings)
-        {
-
-            camera.Parameters[PLCamera.Gain].TrySetValue(cameraSettings.GainRaw);
-            camera.Parameters[PLCamera.ExposureTimeAbs].TrySetValue(cameraSettings.ExposureTime);
-            camera.Parameters[PLCamera.Width].TrySetValue(cameraSettings.Width);
-            camera.Parameters[PLCamera.Height].TrySetValue(cameraSettings.Height);
-        }
-
+        //public static void SetChangebleCameraSettings(Camera camera, CameraSettings cameraSettings)
+        //{
+        //    camera.Parameters[PLCamera.Gain].TrySetValue(cameraSettings.GainRaw);
+        //    camera.Parameters[PLCamera.ExposureTimeAbs].TrySetValue(cameraSettings.ExposureTime);
+        //    camera.Parameters[PLCamera.Width].TrySetValue(cameraSettings.Width);
+        //    camera.Parameters[PLCamera.Height].TrySetValue(cameraSettings.Height);   
+        //}
     }
 }

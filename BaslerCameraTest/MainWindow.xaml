@@ -6,6 +6,10 @@
         xmlns:local="clr-namespace:BaslerCameraTest"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1200">
+    <Window.Resources>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
@@ -21,42 +25,96 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            <ComboBox ItemsSource="{Binding AvailableCameras}" SelectedItem="{Binding SelectedCamera}" DisplayMemberPath="[FriendlyName]" Margin="10" Grid.Row="0"/>
+            <Button Content="한장" FontSize="20" FontWeight="Black" Height="40" Margin="10" Command="{Binding OneShotCommand}" Grid.Row="1"/>
+            <Button Content="여러장" FontSize="20" FontWeight="Black" Height="40" Margin="10" Command="{Binding ContinuousShotCommand}" Grid.Row="2"/>
+            <Button Content="중지" FontSize="20" FontWeight="Black" Height="40" Margin="10" Command="{Binding StopCommand}" Grid.Row="3"/>
+
             <Grid Grid.Row="4">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Label Content="Width" Grid.Row="0" />
-                <Label Content="Height" Grid.Row="1"/>
-                <Label Content="Gain" Grid.Row="2"/>
-                <Label Content="ExposureTime" Grid.Row="3"/>
+                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="2,2,2,0">
+                    <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                        <Label Content="Width" Grid.Row="0" HorizontalAlignment="Center"/>
+                        <TextBox Text="{Binding WidthInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" TextAlignment="Center"
+                                 IsEnabled="{Binding IsContinuousShooting, Converter={StaticResource InverseBoolConverter}}"/>
+                        <Slider Value="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" x:Name="Width"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"  Minimum="0" Maximum="1920" 
+                                 IsEnabled="{Binding IsContinuousShooting, Converter={StaticResource InverseBoolConverter}}"/>
+                    </Grid>
+                </Border>
 
-                <TextBox Text="{Binding Width}" Grid.Row="0" Grid.Column="1"/>
-                <TextBox Text="{Binding Height}" Grid.Row="1" Grid.Column="1"/>
-                <TextBox Text="{Binding Gainraw}" Grid.Row="2" Grid.Column="1"/>
-                <TextBox Text="{Binding ExposureTime}" Grid.Row="3" Grid.Column="1"/>
-            </Grid>
-            <ComboBox ItemsSource="{Binding AvailableCameras}" SelectedItem="{Binding SelectedCamera}" DisplayMemberPath="[FriendlyName]" Margin="10" Grid.Row="0"/>
-            <Button Content="한장" Command="{Binding OneShotCommand}" Grid.Row="1"/>
-            <Button Content="여러장" Command="{Binding ContinuousShotCommand}" Grid.Row="2"/>
-            <Button Content="중지" Command="{Binding StopCommand}" Grid.Row="3"/>
+                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2,2,2,0">
+                    <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                        <Label Content="Height" Grid.Row="0"  HorizontalAlignment="Center"/>
+                        <TextBox Text="{Binding HeightInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" TextAlignment="Center"
+                                IsEnabled="{Binding IsContinuousShooting, Converter={StaticResource InverseBoolConverter}}"/>
+                         <Slider Value="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  x:Name="Height" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Minimum="0" Maximum="1080"
+                                IsEnabled="{Binding IsContinuousShooting, Converter={StaticResource InverseBoolConverter}}"/>
+                </Grid>
+                </Border>
+                
+                <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2,2,2,0">
+                    <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                        <Label Content="Gain" Grid.Row="0"  HorizontalAlignment="Center"/>
+                        <TextBox Text="{Binding GainInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" TextAlignment="Center"
+                          IsEnabled="{Binding IsContinuousShooting, Converter={StaticResource InverseBoolConverter}}"/>
+                <Slider Value="{Binding Gainraw, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" x:Name="Gain" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Minimum="0" Maximum="66"
+                        IsEnabled="{Binding IsContinuousShooting, Converter={StaticResource InverseBoolConverter}}"/>
+                    </Grid>
+                </Border>
+                <Border Grid.Row="3" BorderBrush="Black" BorderThickness="2,2,2,2">
+                    <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                        <Label Content="Ex.Time" Grid.Row="0"  HorizontalAlignment="Center"/>
+                        <!--<TextBox Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" TextAlignment="Center"/>-->
+                        <TextBox Text="{Binding ExposureTimeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" TextAlignment="Center"/>
 
-            <Grid Grid.Row="8">
-                <Button Content="저장"  Command="{Binding ApplyAndSaveSettingsCommand}"/>
+                        <Slider Value="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" x:Name="ExposureTime" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Minimum="35" Maximum="9999990"/>
+                    </Grid>
+                </Border>
             </Grid>
+
         </Grid>
 
         <Grid Grid.Column="1">
             <Image Source="{Binding CapturedImage}" Margin="10" Grid.Row="3"/>
         </Grid>
-
     </Grid>
 </Window>
